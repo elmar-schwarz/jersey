@@ -72,6 +72,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -265,6 +266,13 @@ public final class WebResourceFactory implements InvocationHandler {
         String[] accepts = produces == null ? null : produces.value();
 
         // determine content type
+        // if content type is provided in header use provided content type
+        List<Object> contentTypeHeaders = headers.get(HttpHeaders.CONTENT_TYPE);
+        if ((contentTypeHeaders != null) && !contentTypeHeaders.isEmpty()) {
+            contentType = contentTypeHeaders.get(0).toString();
+        }
+
+        // use the first content type in annotations of no header has been provided explicitly
         String contentType = null;
         if (entity != null) {
             Consumes consumes = method.getAnnotation(Consumes.class);
